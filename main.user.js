@@ -22,15 +22,8 @@ var url = window.location.href;
 function exsit(){
     if(document.getElementsByClassName("read start")[0].innerHTML == "从头开始阅读"){
         return true;
-    }return false;
-
-    // 已废弃的匹配规则
-    // if(url.match(/\//g).length-2 == 3 && document.title.match(/第一版主网/).length == 1){
-    //     if(url.indexOf("_") == -1){
-    //         return true;
-    //     }
-    // }   return false;
-    
+    }
+    return false;
 }
 
 //获取文章标题
@@ -58,7 +51,8 @@ function getList(page,first){
 
     //翻页
     async function turnPage(page){
-        let uurl = url.substring(0, url.length-1) + "_" + page + "/";    
+        console.log("PAGEE >> ",page)
+        let uurl = url.substring(0, url.length-1) + "_" + page + "/";
         let xhr =new XMLHttpRequest();
         xhr.open("GET", uurl);
         xhr.responseType = "document";
@@ -90,11 +84,14 @@ function getList(page,first){
 
 //获取文章章节标题和链接
 function getCataInfo(list){
-    let link = new Array();
+    let link = [];
     for (let i = 0;i < list.length; i++){
-        link.push(list[i].innerText);
-        link.push(window.location.host + list[i].getAttribute("href"));
-    }return (link);
+        link.push({
+        'title':list[i].innerText,
+        'href':window.location.host + list[i].getAttribute("href")
+        });
+    }
+    return (link);
 }
 
 
@@ -128,23 +125,19 @@ function downloadDoc(){
         alert("请勿重复点击！");
     }else{
         downloadStatus++;
-        page = document.body.innerHTML;
+        let page = document.body.innerHTML;
         getList(0,0) //获取章节
 
         //延时等待目录请求完毕
         setTimeout(() => {
             //得到链接列表
             var link = getCataInfo(catalogueArr);
+            console.log("===================");
             console.log(catalogueArr);
             console.log(link);
-            
             //开始下载
-            
         }, 1000);
-
-
         // downloadFile("1" + ".html",page)
-        
     }
 }
 
@@ -161,13 +154,12 @@ function layButton(){
         let ftNode = document.getElementsByClassName("ft")[0].childNodes[1].childNodes[1];
 
         ftNode.appendChild(downloadBtn);
-        
     }
 }
 
 // 入口
 (function() {
-    'use strict';   
+    'use strict';
 
     //放置按钮
     if(exsit()){
